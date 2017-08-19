@@ -4,18 +4,10 @@ TakeThree is an iOS app which enables a user to apply a green screen effect in r
 
 First, we select and fine-tune a color for the green screen and then we resize our media:
 
-<p align="center">
-<img src="http://i.imgur.com/1IIAXOm.gif"> <img src="http://i.imgur.com/FA6gZFB.gif">
+![color](http://i.imgur.com/1IIAXOm.gif) ![media](http://i.imgur.com/FA6gZFB.gif)
 
 Next, we create a snazzy video by overlaying two green screen effects on top of each other!
-
-</p>
-<p align="center">
-<img src="http://i.imgur.com/CHnGJGm.gif">  <img src="http://i.imgur.com/TBS7Oaq.gif">
-</p>
-
-## What am I looking at here?
-The files in this repo are a small snippet of the overall code base.
+![zoomheart](http://i.imgur.com/CHnGJGm.gif) ![final](http://i.imgur.com/TBS7Oaq.gif)
 
 ## Thoughts on Development
 I started by using OpenCV's iOS framework (code in folder above). This didn't work very well - 
