@@ -14,7 +14,7 @@ I started by using OpenCV's iOS framework (code in folder above). This didn't wo
 - OpenCV performs all calculations on the device CPU
 - OpenCV's iOS wrapper is error-prone and poorly documented
 
-As I hovered around the finish line of TakeThree v1, I was regularly exceeding 90% of CPU usage on my iPhone 7 according to xcode's debugging tools. Further, I found myself re-writing large portions of the iOS wrapper because of buggy or unsupported functionality. This was unacceptable.
+As I hovered around the finish line of TakeThree v1, I was regularly exceeding 90% of CPU usage on my iPhone 7 according to xcode's debugging tools. Further, I found myself re-writing large portions of the iOS wrapper to compensate for buggy or unsupported functionality. This was unacceptable to me.
 
 The final version of TakeThree is written using Apple's CoreImage framework. So many good things to say. Here are a few:
 - CPU usage rarely exceeded 40%
@@ -24,11 +24,24 @@ The final version of TakeThree is written using Apple's CoreImage framework. So 
 
 Using CoreImage, I was able to offload a significant chunk of work onto the GPU. A simple example is video recording. OpenCV returns a `CGImage`, which is passed to the `VideoRecorder` object. A `CGImage` is a bitmap stored in memory, which is drawn into a pixel buffer using a `CGContext`, which uses the CPU.
 
-By contrast, a `CIImage` is simply a representation of an image which contains information about what the final image should look like. The final output is processed lazily - only on request. A `CIImage` can be directly rendered using the GPU into a `VideoRecorder` pixel buffer using a `CIContext`. Using CoreImage prevents unncessary and expensive jumps between the CPU and GPU.
+By contrast, a `CIImage` is simply a representation of an image which contains information about what the final image should look like. The final output is processed lazily - only on request. A `CIImage` can be directly rendered using the GPU into a `VideoRecorder` pixel buffer using a `CIContext`. Using CoreImage prevents unnecessary and expensive jumps between the CPU and GPU.
 
 Another alternative to OpenCV and CoreImage is GPUImage. GPUImage is a third party library which claims roughly the same image processing performance as CoreImage. A clear entry in GPUImage's "pro" column is the ability to directly use OpenGL files in an xcode project. While CoreImage technically supports OpenGL code, the code must be inserted as a string. Complicated image processing code injected into CoreImage as a string seems like a really bad idea. However, after some research, I found that CoreImage's 100's of built-in filters more than suited my needs when chained together.
 
 Below is a brief bullet point summary of the technical details of the gifs above. Questions and comments are welcome!
+
+## Next Steps
+
+A number of features were omitted due to time constraints.
+
+- **Landscape videos** don't record as landscape; a user needs to import the video into iMovie, rotate, and then export.
+- **Resolution** - The decision to limit videos to 720p was made when I was still using OpenCV to process images and CPU usage was very high. More testing needs to be done across different iOS devices to see if 4k or 1080p can be supported.
+-  **Object recognition** - In most cases, a user selects the color of an object on which the video should be projected. Prompting the user to select an object instead of a color would probably  better capture a user's intent, though object recognition seems beyond the current limitations of CoreImage
+- **First Time User Experience** - Most users seem to struggle with the first step of choosing a color. Green screens only work properly if the selected color contrasts highly with the other colors found in the environment. Often, the environment is too dark or colors are too similar to create an effective green screen. Improving FTUX is tricky - a tutorial sequence could cause users to exit the app, a short animation might not be adequate to explain best practices.
+
+While the above are my personal wishlist, an analytics suite should also be implemented to support future product decisions with hard data.
+
+The scant details in iTunes Connect seem inadequate to monitor a user's progress throughout the app. Metrics such as time spent in app, progress made through a first video creation, user retention, number of times buttons are tapped, etc. are invaluable to creating a roadmap.
 
 ## Camera Configuration
 - Image rendered on the GPU using a `GLKView`
@@ -38,7 +51,7 @@ Below is a brief bullet point summary of the technical details of the gifs above
 - Gesture recognizer returns tapped coordinate
 - Tapped coordinate is converted from `UIKit` coordinate system to `CoreImage` coordinate system
 - User-tapped color is retrieved from the sample buffer using the `CoreImage` coordinate
-- Shadows, color inconsistencies in the livew preview, etc. cause enough variation such that user intention usually can't be conveyed using only one RGB color. We need a range of colors
+- Shadows, color inconsistencies in the live preview, etc. cause enough variation such that user intention usually can't be conveyed using only one RGB color. We need a range of colors
 - Range of colors (user intent) can be derived in a number of ways. Ultimately settled on a flat hue-saturation-value color thresholding
 - User can fine-tune the "value" component of the color range using a two-handle slider
 
